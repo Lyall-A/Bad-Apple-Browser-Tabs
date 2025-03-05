@@ -2,6 +2,7 @@ const childProcess = require("child_process");
 const fs = require("fs");
 
 const input = "bad apple.mp4";
+// const input = "rgb.mp4";
 const output = "map.json";
 const width = 70;
 const height = 53;
@@ -9,17 +10,35 @@ const fps = 3;
 const defaultCharacter = "⬛";
 const characters = [
     {
-        redRange: [0, 127],
-        greenRange: [0, 127],
-        blueRange: [0, 127],
+        redRange: [0, 10],
+        greenRange: [0, 10],
+        blueRange: [0, 10],
         character: "⬛"
     },
     {
-        redRange: [128, 255],
-        greenRange: [128, 255],
-        blueRange: [128, 255],
+        redRange: [205, 255],
+        greenRange: [205, 255],
+        blueRange: [205, 255],
         character: "⬜"
-    }
+    },
+    {
+        redRange: [245, 255],
+        greenRange: [0, 50],
+        blueRange: [0, 50],
+        character: "🟥"
+    },
+    {
+        redRange: [0, 50],
+        greenRange: [205, 255],
+        blueRange: [0, 50],
+        character: "🟩"
+    },
+    {
+        redRange: [0, 50],
+        greenRange: [0, 50],
+        blueRange: [205, 255],
+        character: "🟦"
+    },
 ];
 
 console.log(`Converting video to Bitmaps...`);
@@ -59,6 +78,7 @@ ffmpeg.on("close", () => {
         const timestamp = frameIndex * (1000 / fps);
         
         for (let y = 0; y < bitmap.imageHeight; y++) {
+            let lastCharacter = " ";
             if (!map[y]) map[y] = [];
             for (let x = 0; x < bitmap.imageWidth; x++) {
                 const pixel = bitmap.pixels[y][x];
@@ -68,7 +88,8 @@ ffmpeg.on("close", () => {
                     if (i.greenRange[0] > pixel.green || i.greenRange[1] < pixel.green) return false;
                     if (i.blueRange[0] > pixel.blue || i.blueRange[1] < pixel.blue) return false;
                     return true;
-                })?.character || defaultCharacter;
+                })?.character || defaultCharacter || lastCharacter;
+                lastCharacter = character;
                 map[y][x].push([
                     character,
                     timestamp
@@ -149,9 +170,9 @@ function parseBitmap(data) {
 
             if (colorDepth === 24) {
                 row.push({
-                    red: data[pixelStart],
+                    red: data[pixelStart + 2],
                     green: data[pixelStart + 1],
-                    blue: data[pixelStart + 2],
+                    blue: data[pixelStart],
                 });
             } else {
                 throw new Error(`Color depth '${colorDepth}' is not supported`);

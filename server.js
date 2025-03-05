@@ -2,6 +2,8 @@ const http = require("http");
 const fs = require("fs");
 
 const map = require("./map.json");
+const videoPath = "bad apple.mp4";
+// const videoPath = "rgb.mp4";
 
 const server = http.createServer();
 
@@ -27,11 +29,7 @@ server.on("request", (req, res) => {
     } else
     if (req.method === "GET" && path === "/video.mp4") {
         res.writeHead(200, { "Content-Type": "video/mp4" });
-        res.end(fs.readFileSync("./bad apple.mp4"));
-    } else
-    if (req.method === "GET" && path === "/video.mp4") {
-        res.writeHead(200, { "Content-Type": "video/mp4" });
-        res.end(fs.readFileSync("./bad apple.mp4"));
+        res.end(fs.readFileSync(videoPath));
     } else
     if (req.method === "GET" && path === "/row") {
         const y = parseInt(query.y);
