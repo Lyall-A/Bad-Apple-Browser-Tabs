@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    </head>
+    <body>
+        <script src="/main.js"></script>
+        <script>
+            const searchParams = new URLSearchParams(location.search);
+
+            document.title = "Loading map...";
+
+            loadMap(searchParams.get("map")).then(map => {
+                document.title = "Waiting";
+                
+                const y = parseInt(searchParams.get("y"));
+                const start = parseInt(searchParams.get("start"));
+                (function updateCharactersLoop() {
+                    const currentTimestamp = Date.now() - start;
+                    if (currentTimestamp >= 0) {
+                        const row = [];
+                        for (const x in map[y]) {
+                            const characters = map[y][x];
+                            const currentCharacter = characters.toReversed().find(([character, timestamp]) => currentTimestamp >= timestamp)?.[0].charAt(0);
+                            row.push(currentCharacter);
+                        }
+                        const title = row.join("");
+                        if (title !== document.title) {
+                            document.title = title;
+                            console.log(title);
+                        }
+                    }
+                    requestAnimationFrame(updateCharactersLoop);
+                })();
+            });
+        </script>
+    </body>
+</html>
