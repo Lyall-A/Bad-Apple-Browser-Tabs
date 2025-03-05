@@ -6,7 +6,7 @@ const input = "bad apple.mp4";
 const output = "map.json";
 const width = 70;
 const height = 53;
-const fps = 3;
+const fps = 5;
 const defaultCharacter = "⬛";
 const characters = [
     {
@@ -67,8 +67,42 @@ ffmpeg.stderr.on("data", data => console.log(data.toString().split("\n").map(i =
 ffmpeg.on("close", () => {
     addFrame(); // Add last frame
 
+    // console.log("Converting Bitmaps to rows");
+
+    // const { imageHeight } = parseBitmapHeaders(frames[0]);
+
+    // for (let y = 0; y < imageHeight; y++) {
+    //     const row = [];
+    //     for (const frameIndex in frames) {
+    //         const frame = frames[frameIndex];
+    //         const bitmap = parseBitmap(frame);
+    //         const timestamp = frameIndex * (1000 / fps);
+    //         let lastCharacter = " ";
+    //         for (let x = 0; x < bitmap.imageWidth; x++) {
+    //             const pixel = bitmap.pixels[y][x];
+    //             if (!row[x]) row[x] = [];
+    //             const character = characters.find(i => {
+    //                 if (i.redRange[0] > pixel.red || i.redRange[1] < pixel.red) return false;
+    //                 if (i.greenRange[0] > pixel.green || i.greenRange[1] < pixel.green) return false;
+    //                 if (i.blueRange[0] > pixel.blue || i.blueRange[1] < pixel.blue) return false;
+    //                 return true;
+    //             })?.character || defaultCharacter || lastCharacter;
+    //             lastCharacter = character;
+    //             row[x].push([
+    //                 character,
+    //                 timestamp
+    //             ]);
+    //         }
+    //     }
+    //     fs.writeFileSync(`./rows/${y}.json`, JSON.stringify(row));
+    // }
+
+    // return;
+
+
+
     console.log("Converting Bitmaps to map");
-    
+
     const map = [];
 
     for (const frameIndex in frames) {
