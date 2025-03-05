@@ -3,10 +3,10 @@ const fs = require("fs");
 
 const input = "bad apple.mp4";
 const output = "map.json";
-const width = 40;
-const height = 30;
-const fps = 10;
-const defaultCharacter = "?"
+const width = 70;
+const height = 53;
+const fps = 3;
+const defaultCharacter = "⬛";
 const characters = [
     {
         redRange: [0, 127],
@@ -43,7 +43,7 @@ ffmpeg.stdout.on("data", data => {
     lastFrameBufferArray.push(data);
 });
 
-// ffmpeg.stderr.on("data", data => console.log(data.toString().split("\n").map(i => `FFmpeg: ${i}`).join("\n")));
+ffmpeg.stderr.on("data", data => console.log(data.toString().split("\n").map(i => `FFmpeg: ${i}`).join("\n")));
 
 ffmpeg.on("close", () => {
     addFrame(); // Add last frame

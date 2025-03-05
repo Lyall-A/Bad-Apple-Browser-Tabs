@@ -1,37 +1,56 @@
 <!DOCTYPE html>
 <html>
-    <head>
-    </head>
-    <body>
-        <script src="/main.js"></script>
-        <script>
-            const searchParams = new URLSearchParams(location.search);
 
-            document.title = "Loading map...";
+<head>
+</head>
 
-            loadMap(searchParams.get("map")).then(map => {
-                document.title = "Waiting";
-                
-                const y = parseInt(searchParams.get("y"));
-                const start = parseInt(searchParams.get("start"));
+<body>
+    <script src="/main.js"></script>
+    <script>
+        const searchParams = new URLSearchParams(location.search);
+
+        document.title = "Waiting";
+        resizeTo(null, 1);
+
+        const y = parseInt(searchParams.get("y"));
+        const start = parseInt(searchParams.get("start"));
+        const mapUrl = searchParams.get("mapUrl");
+
+        if (useServer) {
+            getRow(y).then(row => {
                 (function updateCharactersLoop() {
                     const currentTimestamp = Date.now() - start;
                     if (currentTimestamp >= 0) {
-                        const row = [];
-                        for (const x in map[y]) {
-                            const characters = map[y][x];
-                            const currentCharacter = characters.toReversed().find(([character, timestamp]) => currentTimestamp >= timestamp)?.[0].charAt(0);
-                            row.push(currentCharacter);
-                        }
-                        const title = row.join("");
-                        if (title !== document.title) {
-                            document.title = title;
-                            console.log(title);
-                        }
+                        const frame = row.map(i => i.toReversed().find(([character, timestamp]) => currentTimestamp >= timestamp));
+                        setRow(frame);
+                    }
+                    requestAnimationFrame(updateCharactersLoop);
+                    // setTimeout(updateCharactersLoop, (1000 / fps));
+                })();
+            });
+        } else {
+            loadMap(mapUrl).then(map => {
+                (function updateCharactersLoop() {
+                    const currentTimestamp = Date.now() - start;
+                    if (currentTimestamp >= 0) {
+                        const frame = map[y].map(i => i.toReversed().find(([character, timestamp]) => currentTimestamp >= timestamp));
+                        setRow(frame);
                     }
                     requestAnimationFrame(updateCharactersLoop);
                 })();
             });
-        </script>
-    </body>
+        }
+
+        function setRow(row) {
+            const title = row.map(i => i[0]).join("");
+            document.title = title;
+        }
+    </script>
+    <style>
+        body {
+            background-color: black;
+        }
+    </style>
+</body>
+
 </html>

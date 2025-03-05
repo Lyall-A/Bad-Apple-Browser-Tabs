@@ -5,17 +5,26 @@
     </head>
     <body>
         <button onclick="openWindows()">Spawn windows</button>
+        <video id="video"></video>
         <script src="/main.js"></script>
         <script>
             const mapUrl = `/map.json`;
 
+            const video = document.getElementById("video");
+            video.src = videoUrl;
+            video.volume = 0.25;
+
             function openWindows() {
                 loadMap(mapUrl).then(map => {
                     const start = Date.now() + 5000;
+                    // const start = Date.now() - 60000;
+                    setTimeout(() => {
+                        video.play();
+                        // video.currentTime = ((Date.now() - start) / 1000);
+                    }, start - Date.now());
                     for (let y = 0; y < map.length; y++) {
                         console.log(`Spawning window: ${y}`);
-                        window.open(`/tab.html?y=${y}&start=${start}&map=${encodeURIComponent(mapUrl)}`, "_blank", `width=${map[y].length * characterWidth},height=1,top=${topOffset * y},left=0`);
-                        // break;
+                        window.open(`/tab?y=${y}&start=${start}&mapUrl=${encodeURIComponent(mapUrl)}`, "_blank", `width=${(map[y].length * characterWidth) + widthMargin},height=1,top=${topOffset * y},left=0`);
                     }
                 });
             }
